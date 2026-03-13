@@ -49,14 +49,14 @@ const DetailedModelInfo = z.object({
   }),
   model_info: z
     .object({
-      max_tokens: z.number().optional(),
-      max_input_tokens: z.number().optional(),
-      max_output_tokens: z.number().optional(),
-      litellm_provider: z.string().optional(),
+      max_tokens: z.number().nullish(),
+      max_input_tokens: z.number().nullish(),
+      max_output_tokens: z.number().nullish(),
+      litellm_provider: z.string().nullish(),
       mode: z.string().optional(),
-      supports_vision: z.boolean().nullable().optional(),
-      supports_function_calling: z.boolean().nullable().optional(),
-      supports_tool_choice: z.boolean().nullable().optional(),
+      supports_vision: z.boolean().nullish(),
+      supports_function_calling: z.boolean().nullish(),
+      supports_tool_choice: z.boolean().nullish(),
     })
     .optional(),
 });
@@ -108,7 +108,7 @@ function convertDetailedLiteLLMToModelConfig(response: unknown): ModelConfig[] {
       // Use LiteLLM's capability flags (most reliable), with fallback to provider detection
       const capabilities =
         detectCapabilitiesFromLiteLLM(modelInfo) ||
-        detectCapabilitiesFromProvider(model.model_name, modelInfo?.litellm_provider);
+        detectCapabilitiesFromProvider(model.model_name, modelInfo?.litellm_provider || undefined);
 
       return {
         name: model.model_name,
