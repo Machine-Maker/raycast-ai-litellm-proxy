@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod/v4';
-import { HttpError } from '../errors';
+import { HttpError } from '../errors/index.js';
 import {
   ModelNotFoundError,
   LiteLLMConnectionError,
   LiteLLMAuthError,
   LiteLLMNotFoundError,
   StreamingError,
-} from '../errors/custom-errors';
+} from '../errors/custom-errors.js';
 import { HttpLogger, pinoHttp } from 'pino-http';
 import { Logger } from 'pino';
 import { randomUUID } from 'node:crypto';
-import { makeOllamaChunk, makeSSEMessage } from '../util';
+import { makeOllamaChunk, makeSSEMessage } from '../util.js';
 
 interface ErrorBody {
   status: number;

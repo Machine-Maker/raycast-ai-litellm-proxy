@@ -1,4 +1,4 @@
-import { ModelConfig } from './models';
+import { ModelConfig } from './models.js';
 
 export class ModelStore {
   private modelMap = new Map<string, ModelConfig>();

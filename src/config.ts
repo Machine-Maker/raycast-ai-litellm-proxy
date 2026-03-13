@@ -5,7 +5,7 @@ import {
   DEFAULT_BASE_URL,
   DEFAULT_PING_INTERVAL,
   DEFAULT_REFRESH_INTERVAL,
-} from './constants';
+} from './constants.js';
 
 export const Config = z.object({
   port: z.coerce.number().int().positive().default(DEFAULT_PORT),

@@ -1,4 +1,4 @@
-import { DEFAULT_CONTEXT_LENGTH, CONTEXT_LENGTHS } from '../constants';
+import { DEFAULT_CONTEXT_LENGTH, CONTEXT_LENGTHS } from '../constants.js';
 
 export function getModelContextLength(modelId: string): number {
   if (modelId.includes('claude-3') || modelId.includes('claude-sonnet-4')) {

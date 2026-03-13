@@ -1,10 +1,10 @@
 import express, { Express } from 'express';
-import { Middleware } from './middleware';
-import { makeApiRoutes } from './routes/api';
-import { Config } from './config';
-import { ModelConfig } from './data/models';
-import { ModelStore } from './data/model-store';
-import { DEFAULT_JSON_LIMIT } from './constants';
+import { Middleware } from './middleware/index.js';
+import { makeApiRoutes } from './routes/api.js';
+import { Config } from './config.js';
+import { ModelConfig } from './data/models.js';
+import { ModelStore } from './data/model-store.js';
+import { DEFAULT_JSON_LIMIT } from './constants.js';
 import OpenAI from 'openai';
 
 export interface AppContext {
