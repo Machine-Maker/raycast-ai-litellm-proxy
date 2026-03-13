@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { generateModelsList, generateModelInfo } from '../data/models';
-import { ModelNotFoundError } from '../errors/custom-errors';
-import { AppContext } from '../app';
+import { generateModelsList, generateModelInfo } from '../data/models.js';
+import { ModelNotFoundError } from '../errors/custom-errors.js';
+import { AppContext } from '../app.js';
 import {
   convertOllamaMessagesToOpenAI,
   convertRaycastToolsToOpenAI,
@@ -9,7 +9,7 @@ import {
   makeSSEMessage,
   OllamaChatRequest,
   OllamaChunkResponse,
-} from '../util';
+} from '../util.js';
 import { ChatCompletionCreateParamsStreaming, ChatCompletionChunk } from 'openai/resources';
 import { z } from 'zod/v4';
 
@@ -45,7 +45,7 @@ export const makeApiController = ({
         throw new ModelNotFoundError(requestedModel);
       }
 
-      const openaiMessages = convertOllamaMessagesToOpenAI(messages);
+      const openaiMessages = await convertOllamaMessagesToOpenAI(messages);
       const openaiTools = convertRaycastToolsToOpenAI(tools);
 
       const chatConfig: ChatCompletionCreateParamsStreaming = {

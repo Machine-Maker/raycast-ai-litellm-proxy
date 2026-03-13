@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { makeApiController } from '../controllers/api';
-import { AppContext } from '../app';
+import { makeApiController } from '../controllers/api.js';
+import { AppContext } from '../app.js';
 
 export const makeApiRoutes = (ctx: AppContext): Router => {
   const router = Router();

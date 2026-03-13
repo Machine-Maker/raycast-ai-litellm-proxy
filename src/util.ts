@@ -1,4 +1,6 @@
+import { Buffer } from 'node:buffer';
 import { randomBytes } from 'node:crypto';
+import imageType from 'image-type';
 import {
   ChatCompletionChunk,
   ChatCompletionMessageParam,
@@ -116,9 +118,15 @@ export function makeOllamaChunk(
   };
 }
 
-export function convertOllamaMessagesToOpenAI(
+async function detectImageMimeType(base64: string): Promise<string> {
+  const buffer = Buffer.from(base64, 'base64');
+  const result = await imageType(buffer);
+  return result?.mime ?? 'image/jpeg';
+}
+
+export async function convertOllamaMessagesToOpenAI(
   messages: OllamaChatMessage[],
-): ChatCompletionMessageParam[] {
+): Promise<ChatCompletionMessageParam[]> {
   // Store all tool call IDs in order
   const toolCallIds: string[] = [];
 
@@ -126,61 +134,63 @@ export function convertOllamaMessagesToOpenAI(
     return randomBytes(5).toString('hex').slice(0, 9);
   };
 
-  return messages.map((msg): ChatCompletionMessageParam => {
-    // Handle tool calls in assistant messages
-    if (msg.role === 'assistant' && msg.tool_calls) {
-      // Clear previous tool call IDs and generate new ones
-      toolCallIds.length = 0;
+  return Promise.all(
+    messages.map(async (msg): Promise<ChatCompletionMessageParam> => {
+      // Handle tool calls in assistant messages
+      if (msg.role === 'assistant' && msg.tool_calls) {
+        // Clear previous tool call IDs and generate new ones
+        toolCallIds.length = 0;
 
-      return {
-        role: 'assistant',
-        content: msg.content,
-        tool_calls: msg.tool_calls.map((tc) => {
-          const toolCallId = makeToolCallId();
-          toolCallIds.push(toolCallId); // Store each tool call ID
-          return {
-            id: toolCallId,
-            type: 'function',
-            function: {
-              name: tc.function.name,
-              arguments: JSON.stringify(tc.function.arguments),
-            },
-          };
-        }),
-      };
-    }
+        return {
+          role: 'assistant',
+          content: msg.content,
+          tool_calls: msg.tool_calls.map((tc) => {
+            const toolCallId = makeToolCallId();
+            toolCallIds.push(toolCallId); // Store each tool call ID
+            return {
+              id: toolCallId,
+              type: 'function',
+              function: {
+                name: tc.function.name,
+                arguments: JSON.stringify(tc.function.arguments),
+              },
+            };
+          }),
+        };
+      }
 
-    // Handle tool responses
-    if (msg.role === 'tool') {
-      // Use the next available tool call ID in sequence
-      const toolCallId = toolCallIds.shift() || makeToolCallId();
-      return {
-        role: 'tool',
-        content: msg.content,
-        tool_call_id: toolCallId,
-      };
-    }
+      // Handle tool responses
+      if (msg.role === 'tool') {
+        // Use the next available tool call ID in sequence
+        const toolCallId = toolCallIds.shift() || makeToolCallId();
+        return {
+          role: 'tool',
+          content: msg.content,
+          tool_call_id: toolCallId,
+        };
+      }
 
-    // Handle images if present
-    if (msg.images && msg.images.length > 0 && msg.role === 'user') {
-      return {
-        role: 'user',
-        content: [
-          { type: 'text', text: msg.content },
-          ...msg.images.map((img) => ({
+      // Handle images if present
+      if (msg.images && msg.images.length > 0 && msg.role === 'user') {
+        const imageParts = await Promise.all(
+          msg.images.map(async (img) => ({
             type: 'image_url' as const,
-            image_url: { url: `data:image/jpeg;base64,${img}` },
+            image_url: { url: `data:${await detectImageMimeType(img)};base64,${img}` },
           })),
-        ],
-      };
-    }
+        );
+        return {
+          role: 'user',
+          content: [{ type: 'text', text: msg.content }, ...imageParts],
+        };
+      }
 
-    // Handle regular messages
-    return {
-      role: msg.role,
-      content: msg.content,
-    };
-  });
+      // Handle regular messages
+      return {
+        role: msg.role,
+        content: msg.content,
+      };
+    }),
+  );
 }
 
 export function convertRaycastToolsToOpenAI(

@@ -10,12 +10,12 @@ import {
   DEFAULT_FAMILY,
   DEFAULT_EMBEDDING_LENGTH,
   DEFAULT_PARAMETER_COUNT,
-} from '../constants';
+} from '../constants.js';
 import {
   LiteLLMConnectionError,
   LiteLLMAuthError,
   LiteLLMNotFoundError,
-} from '../errors/custom-errors';
+} from '../errors/custom-errors.js';
 
 export const ModelConfig = z.object({
   name: z.string(),
@@ -79,8 +79,8 @@ import {
   detectCapabilitiesFromLiteLLM,
   detectCapabilitiesFromProvider,
   getModelCapabilities,
-} from './capability-detection';
-import { getModelContextLength } from './context-length';
+} from './capability-detection.js';
+import { getModelContextLength } from './context-length.js';
 
 function getModelMetadata(modelId: string): {
   contextLength: number;

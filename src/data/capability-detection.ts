@@ -1,5 +1,5 @@
-import { ModelConfig } from './models';
-import { DEFAULT_CAPABILITIES } from '../constants';
+import { ModelConfig } from './models.js';
+import { DEFAULT_CAPABILITIES } from '../constants.js';
 
 // Vision model patterns
 export const VISION_MODEL_PATTERNS = [

@@ -1,10 +1,10 @@
 import OpenAI from 'openai';
-import { makeApp } from './app';
-import { getConfig } from './config';
-import { loadModels } from './data/models';
-import { ModelStore } from './data/model-store';
-import { makeLogger } from './logger';
-import { makeMiddleware } from './middleware';
+import { makeApp } from './app.js';
+import { getConfig } from './config.js';
+import { loadModels } from './data/models.js';
+import { ModelStore } from './data/model-store.js';
+import { makeLogger } from './logger.js';
+import { makeMiddleware } from './middleware/index.js';
 
 async function main() {
   const config = getConfig();
