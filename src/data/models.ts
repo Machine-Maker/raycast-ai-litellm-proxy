@@ -53,7 +53,7 @@ const DetailedModelInfo = z.object({
       max_input_tokens: z.number().nullish(),
       max_output_tokens: z.number().nullish(),
       litellm_provider: z.string().nullish(),
-      mode: z.string().optional(),
+      mode: z.string().nullish(),
       supports_vision: z.boolean().nullish(),
       supports_function_calling: z.boolean().nullish(),
       supports_tool_choice: z.boolean().nullish(),
